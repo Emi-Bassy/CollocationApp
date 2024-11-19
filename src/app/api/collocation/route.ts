@@ -1,4 +1,4 @@
-import { APIResponse } from './types';
+import { APIResponse } from '../../lib/types';
 
 const API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY || 'fd22b77fdfmsha3a7f731bbaaf84p122f13jsnff0be6253f1c';
 const API_HOST = process.env.NEXT_PUBLIC_RAPIDAPI_HOST || 'linguatools-english-collocations.p.rapidapi.com';
