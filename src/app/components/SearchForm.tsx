@@ -1,10 +1,17 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { SearchResults } from "./SearchResults";
 import { DetailView } from "./DetailView";
 import { fetchCollocations } from "@/app/lib/api";
 import { CollocationResult } from "@/app/lib/types";
+
+// Supabase のクライアントを初期化
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function SearchForm() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,6 +20,7 @@ export default function SearchForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // コロケーションの検索
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!searchTerm.trim()) return;
@@ -70,7 +78,7 @@ export default function SearchForm() {
           )}
 
           {results.length > 0 && (
-            <SearchResults results={results} onResultClick={setSelectedResult} />
+            <SearchResults results={results} onResultClick={setSelectedResult}/>
           )}
         </>
       ) : (
