@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { SearchResults } from "./SearchResults";
 import { DetailView } from "./DetailView";
-import { fetchCollocations } from "@/app/lib/api";
+import { fetchCollocations } from "@/app/api/collocation/route";
 import { CollocationResult } from "@/app/lib/types";
 
 // Supabase のクライアントを初期化
@@ -45,6 +45,7 @@ export default function SearchForm() {
 
   return (
     <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-center mb-8">Collocation Dictionary</h1>
       {!selectedResult ? (
         <>
           <form onSubmit={handleSubmit} className="space-y-4">
