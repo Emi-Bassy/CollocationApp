@@ -1,5 +1,4 @@
 import DOMPurify from "dompurify";
-import parse from "html-react-parser";
 import { CollocationResult } from "@/app/lib/types";
 import { relationMap } from "@/app/lib/types";
 
@@ -10,6 +9,9 @@ interface DetailViewProps {
 
 export function DetailView({ result, onClose }: DetailViewProps) {
     const relationInfo = relationMap[result.relation];
+
+    const sanitizedExample = (html: string) =>
+      DOMPurify.sanitize(html);
 
     return (
         <div className="text-black p-6 bg-white rounded-lg shadow-lg border">
@@ -25,7 +27,12 @@ export function DetailView({ result, onClose }: DetailViewProps) {
             {relationInfo && (
               <div className="mt-2 text-gray-600">
                 <p className="text-sm">{relationInfo.description}</p>
-                <p className="text-sm">例: {relationInfo.example}</p>
+                <p
+                   className="text-sm"
+                   dangerouslySetInnerHTML={{
+                     __html: sanitizedExample(relationInfo.example),
+                   }}
+                />
               </div>
             )}
           </div>
@@ -35,7 +42,9 @@ export function DetailView({ result, onClose }: DetailViewProps) {
               {result.examples.map((example, index) => (
                 <li
                   key={index}
-                  dangerouslySetInnerHTML={{ __html: example }}
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizedExample(example),
+                  }}
                   className="text-gray-800"
                 />
               ))}
