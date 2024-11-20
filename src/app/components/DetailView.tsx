@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CollocationResult } from "@/app/lib/types";
 import { relationMap } from "@/app/lib/types";
 import { supabase } from '@/app/lib/supabaseClient';
@@ -16,6 +17,7 @@ export function DetailView({ result, onClose }: DetailViewProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [tranlation, setTranlation] = useState<string[]>([]);
   const relationInfo = relationMap[result.relation];
+  const router = useRouter();
 
   const sanitizedExample = (html: string) =>
     DOMPurify.sanitize(html);
@@ -64,6 +66,24 @@ export function DetailView({ result, onClose }: DetailViewProps) {
     fetchTranslations();
   }, []);
 
+  // クイズの作成
+  const handleQuiz = async () => {
+    const response = await fetch("api/quiz", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        collocation: result.collocation,
+      }),
+    });
+
+    const quizData = await response.json();
+
+    // /quizページに遷移してクイズデータを渡す
+    router.push(`/quiz?question=${encodeURIComponent(quizData.question)}&answer=${encodeURIComponent(quizData.answer)}`);
+  };
+
   return (
       <div className="text-black p-6 bg-white rounded-lg shadow-lg border">
         <button
@@ -99,6 +119,12 @@ export function DetailView({ result, onClose }: DetailViewProps) {
             </li>
           ))}
           </ul>
+          <button
+            onClick={handleQuiz}
+            className="bg-blue-500 text-white py-2 px-4 rounded mt-4"
+          >
+            Quiz
+          </button>
         </div>
         <button
           onClick={addToProgress}
