@@ -14,7 +14,7 @@ interface DetailViewProps {
 export function DetailView({ result, onClose }: DetailViewProps) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [translateExample, setTranslateExample] = useState<string[]>([]);
+  const [tranlation, setTranlation] = useState<string[]>([]);
   const relationInfo = relationMap[result.relation];
 
   const sanitizedExample = (html: string) =>
@@ -40,6 +40,7 @@ export function DetailView({ result, onClose }: DetailViewProps) {
     setLoading(false);
   };
 
+  // コロケーションの翻訳
   const fetchTranslations = async () => {
     const fetchTranslations = await Promise.all(
       result.examples.map(async (example) => {
@@ -55,7 +56,7 @@ export function DetailView({ result, onClose }: DetailViewProps) {
         return data.text;
       })
     );
-    setTranslateExample(fetchTranslations);
+    setTranlation(fetchTranslations);
   }
 
   // 初回レンダリング時に翻訳を取得
@@ -92,8 +93,8 @@ export function DetailView({ result, onClose }: DetailViewProps) {
             {result.examples.map((example, index) => (
             <li key={index} className="text-gray-800">
               <p dangerouslySetInnerHTML={{ __html: sanitizedExample(example) }} />
-              {translateExample[index] && (
-                <p dangerouslySetInnerHTML={{ __html: sanitizedExample(translateExample[index]) }} />
+              {tranlation[index] && (
+                <p dangerouslySetInnerHTML={{ __html: sanitizedExample(tranlation[index]) }} />
               )}
             </li>
           ))}
