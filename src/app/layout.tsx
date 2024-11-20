@@ -17,11 +17,7 @@ export const metadata = {
   description: "Learning Collocation to improve English",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({children,}: Readonly<{children: React.ReactNode}>) {
   return (
     <html lang="en">
       <body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
@@ -31,6 +27,9 @@ export default function RootLayout({
             </Link>
             <Link href="/progress">
               <h1 className="text-lg font-bold">Progress</h1>
+            </Link>
+            <Link href="/quiz">
+              <h1 className="text-lg font-bold">Quiz</h1>
             </Link>
         </header>
         {children}
