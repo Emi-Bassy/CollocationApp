@@ -32,7 +32,7 @@ const Translator = () => {
             setText(transcript);
 
             // 翻訳をリクエスト
-            const results = await fetch("api/quiz", {
+            const results = await fetch("api/translate", {
                 method: "POST",
                 body: JSON.stringify({
                     text: transcript,

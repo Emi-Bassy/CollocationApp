@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
 import { CollocationResult } from "@/app/lib/types";
 import { relationMap } from "@/app/lib/types";
@@ -14,6 +14,7 @@ interface DetailViewProps {
 export function DetailView({ result, onClose }: DetailViewProps) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [translateExample, setTranslateExample] = useState<string[]>([]);
   const relationInfo = relationMap[result.relation];
 
   const sanitizedExample = (html: string) =>
@@ -38,6 +39,29 @@ export function DetailView({ result, onClose }: DetailViewProps) {
     }
     setLoading(false);
   };
+
+  const fetchTranslations = async () => {
+    const fetchTranslations = await Promise.all(
+      result.examples.map(async (example) => {
+        const response = await fetch("api/translate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: example, language: "ja"}),
+        });
+
+        const data = await response.json();
+        return data.text;
+      })
+    );
+    setTranslateExample(fetchTranslations);
+  }
+
+  // 初回レンダリング時に翻訳を取得
+  useEffect(() => {
+    fetchTranslations();
+  }, []);
 
   return (
       <div className="text-black p-6 bg-white rounded-lg shadow-lg border">
@@ -66,14 +90,13 @@ export function DetailView({ result, onClose }: DetailViewProps) {
           <h3 className="text-lg font-semibold mb-2">Example Sentences</h3>
           <ul className="list-disc pl-5 space-y-2">
             {result.examples.map((example, index) => (
-              <li
-                key={index}
-                dangerouslySetInnerHTML={{
-                  __html: sanitizedExample(example),
-                }}
-                className="text-gray-800"
-              />
-            ))}
+            <li key={index} className="text-gray-800">
+              <p dangerouslySetInnerHTML={{ __html: sanitizedExample(example) }} />
+              {translateExample[index] && (
+                <p dangerouslySetInnerHTML={{ __html: sanitizedExample(translateExample[index]) }} />
+              )}
+            </li>
+          ))}
           </ul>
         </div>
         <button
