@@ -89,6 +89,13 @@ const QuizPage = () => {
     return <p>Loading...</p>; // クイズデータがロード中の場合
   }
 
+  // コロケーションの読み上げ
+  const handleSpeak = () => {
+    const utterance = new SpeechSynthesisUtterance(questionTranslation);
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  }
+
   return (
     <div className="min-h-screen bg-black p-6">
       <div className="max-w-2xl mx-auto">
@@ -143,8 +150,18 @@ const QuizPage = () => {
                 </div>
                 {questionTranslation && (
                     <div>
-                    <p className="text-lg font-medium text-gray-700">Question Translation:</p>
-                    <p className="mt-1 text-gray-600">{questionTranslation}</p>
+                        <p className="text-lg font-medium text-gray-700">Question Translation:</p>
+                        <p className="mt-1 text-gray-600">{questionTranslation}</p>
+                        <button
+                            onClick={handleSpeak}
+                            className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
+                            >
+                            <img
+                                src="/microphone.svg"
+                                alt="Speak"
+                                className="w-4 h-4"
+                            />
+                        </button>
                     </div>
                 )}
               </div>
