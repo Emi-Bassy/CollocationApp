@@ -83,6 +83,13 @@ export function DetailView({ result, onClose }: DetailViewProps) {
     fetchTranslations();
   }, []);
 
+  // コロケーションの読み上げ
+  const handleSpeak = () => {
+    const utterance = new SpeechSynthesisUtterance(result.collocation);
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  }
+
   // クイズの作成
   const handleQuiz = async () => {
     const response = await fetch("api/quiz", {
@@ -110,6 +117,16 @@ export function DetailView({ result, onClose }: DetailViewProps) {
           Close
         </button>
         <h2 className="text-2xl font-bold mb-4">{result.collocation}</h2>
+        <button
+          onClick={handleSpeak}
+          className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
+        >
+          <img
+            src="/microphone.svg"
+            alt="Speak"
+            className="w-4 h-4"
+          />
+        </button>
         <p className="text-gray-700 mb-6">{collocationTranslation}</p>
         <div className="mb-4">
           <p className="font-medium text-gray-700">Relation: {result.relation}</p>
