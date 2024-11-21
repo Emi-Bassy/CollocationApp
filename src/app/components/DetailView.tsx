@@ -15,7 +15,8 @@ interface DetailViewProps {
 export function DetailView({ result, onClose }: DetailViewProps) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [tranlation, setTranlation] = useState<string[]>([]);
+  const [exampleTranslation, setExampleTranlation] = useState<string[]>([]);
+  const [collocationTranslation, setCollocationTranlation] = useState<string[]>([]);
   const relationInfo = relationMap[result.relation];
   const router = useRouter();
 
@@ -44,22 +45,38 @@ export function DetailView({ result, onClose }: DetailViewProps) {
 
   // コロケーションの翻訳
   const fetchTranslations = async () => {
-    const fetchTranslations = await Promise.all(
-      result.examples.map(async (example) => {
-        const response = await fetch("api/translate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text: example, language: "ja"}),
-        });
+    try {
+      // コロケーションの和訳を取得
+      const collocationResponse = await fetch("api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: result.collocation, language: "ja" }),
+    });
+    const collocationData = await collocationResponse.json();
+    setCollocationTranlation(collocationData.text);
 
-        const data = await response.json();
-        return data.text;
-      })
-    );
-    setTranlation(fetchTranslations);
-  }
+
+    // 例文の和訳を取得
+      const exampleResponse = await Promise.all(
+        result.examples.map(async (example) => {
+          const response = await fetch("api/translate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text: example, language: "ja" }),
+          });
+          const data = await response.json();
+          return data.text;
+        })
+      );
+      setExampleTranlation(exampleResponse);
+    } catch (error) {
+      console.error("Error fetching translations:", error);
+    }
+  };
 
   // 初回レンダリング時に翻訳を取得
   useEffect(() => {
@@ -93,17 +110,12 @@ export function DetailView({ result, onClose }: DetailViewProps) {
           Close
         </button>
         <h2 className="text-2xl font-bold mb-4">{result.collocation}</h2>
+        <p className="text-gray-700 mb-6">{collocationTranslation}</p>
         <div className="mb-4">
           <p className="font-medium text-gray-700">Relation: {result.relation}</p>
           {relationInfo && (
             <div className="mt-2 text-gray-600">
               <p className="text-sm">{relationInfo.description}</p>
-              <p
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: sanitizedExample(relationInfo.example),
-                  }}
-              />
             </div>
           )}
         </div>
@@ -113,8 +125,8 @@ export function DetailView({ result, onClose }: DetailViewProps) {
             {result.examples.map((example, index) => (
             <li key={index} className="text-gray-800">
               <p dangerouslySetInnerHTML={{ __html: sanitizedExample(example) }} />
-              {tranlation[index] && (
-                <p dangerouslySetInnerHTML={{ __html: sanitizedExample(tranlation[index]) }} />
+              {exampleTranslation[index] && (
+                <p dangerouslySetInnerHTML={{ __html: sanitizedExample(exampleTranslation[index]) }} />
               )}
             </li>
           ))}
