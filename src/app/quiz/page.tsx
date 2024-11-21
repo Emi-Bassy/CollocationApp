@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { text } from "stream/consumers";
+import { error } from "console";
 
 const QuizPage = () => {
   const searchParams = useSearchParams();
@@ -11,6 +13,7 @@ const QuizPage = () => {
   const [isRecording, setIsRecording] = useState(false); // 録音状態
   const [spokenText, setSpokenText] = useState<string>(""); // 音声認識結果
   const [translation, setTranslation] = useState<string>(""); // 翻訳結果
+  const [questionTranslation, setQuestionTranslation] = useState<string>(""); // 問題文の英訳
 
   const handleOnRecord = () => {
     if (isRecording) {
@@ -60,6 +63,28 @@ const QuizPage = () => {
     recognition.start();
   };
 
+  const handleShowAnswer = async () => {
+    if (!question) {
+        return;
+    }
+
+    // 問題文を英訳
+    try {
+        const response = await fetch("/api/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: `日本語のクイズ文「${question}」に基づき、選択されたコロケーション「${answer}」を使った英訳を作成してください。`,
+            language: "en",
+          }),
+        });
+        const data = await response.json();
+        setQuestionTranslation(data.text); // 英訳結果を保存
+      } catch (error) {
+        console.error("Translation failed:", error);
+      }
+    };
+
   if (!question || !answer) {
     return <p>Loading...</p>; // クイズデータがロード中の場合
   }
@@ -98,6 +123,13 @@ const QuizPage = () => {
                 >
                   {isRecording ? "Stop" : "Start Recording"}
                 </button>
+
+                <button
+                    onClick={handleShowAnswer}
+                    className="px-6 py-2 rounded-md text-sm font-semibold bg-blue-500 hover:bg-blue-600 text-white"
+                >
+                    答えを確認
+                </button>
               </div>
   
               <div className="pt-4 space-y-3">
@@ -109,6 +141,12 @@ const QuizPage = () => {
                   <p className="text-lg font-medium text-gray-700">Translation:</p>
                   <p className="mt-1 text-gray-600">{translation || "Translation will appear here."}</p>
                 </div>
+                {questionTranslation && (
+                    <div>
+                    <p className="text-lg font-medium text-gray-700">Question Translation:</p>
+                    <p className="mt-1 text-gray-600">{questionTranslation}</p>
+                    </div>
+                )}
               </div>
             </div>
           )}
