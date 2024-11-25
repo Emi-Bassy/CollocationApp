@@ -1,25 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { text } from "stream/consumers";
 import { error } from "console";
 
+type AnswerData = {
+    text: string
+}
+
 const QuizPage = () => {
   const searchParams = useSearchParams();
   const question = searchParams.get("question"); // クイズ文（日本語）
-  const answer = searchParams.get("answer"); // 正解（コロケーション）
+  const answer = searchParams.get("answer"); // ユーザの回答
 
   const [isRecording, setIsRecording] = useState(false); // 録音状態
   const [spokenText, setSpokenText] = useState<string>(""); // 音声認識結果
   const [translation, setTranslation] = useState<string>(""); // 翻訳結果
   const [questionTranslation, setQuestionTranslation] = useState<string>(""); // 問題文の英訳
-
   const [similarity, setSimilarity] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<string>("");
   const [error, setError] = useState<string | null>(null); // エラーメッセージ
+  const [hint, setHint] = useState<string | null>(null); // ヒント内容
+  const [showHint, setShowHint] = useState<boolean>(false); 
+  const [isAnswerButtonClicked, setIsAnswerButtonClicked] = useState(false);
 
-
+  // 音声認識で回答を取得
   const handleOnRecord = () => {
     if (isRecording) {
       setIsRecording(false); // 録音を停止
@@ -68,27 +74,64 @@ const QuizPage = () => {
     recognition.start();
   };
 
-  const handleShowAnswer = async () => {
+  // 問題文を英訳する関数
+  const handleFetchTranslation = async () => {
+    if (!question) {
+      setError("Question is missing.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: question,
+          language: "en",
+        }),
+      });
+      const data:AnswerData = await response.json();
+      setQuestionTranslation(data.text); // 英訳結果を保存
+      return data.text; // 翻訳結果を返す
+    } catch (error) {
+      console.error("Error fetching translation:", error);
+      setError("Translation failed.");
+    }
+  };
+
+  // ヒントを取得する関数
+  const handleFetchHint = async () => {
     if (!question || !answer) {
-        setError("Question or answer is missing.");
-        return;
+      setError("Question or answer is missing.");
+      return;
+    }
+    setError(null); // エラーのリセット
+    const translation = await handleFetchTranslation(); // 問題文の翻訳を取得
+    console.log(translation);
+    if (translation) {
+        // 正解の英文をランダムに並び替え
+        const words = translation.split(" ");
+        const shuffledWords = words
+        .map((word): { word: string; sort: number } => ({ word, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ word }: { word: string }) => word);
+        
+        const shuffledHint = shuffledWords.join(" ");
+        setHint(shuffledHint); // ヒントを保存
+        setShowHint(true); // ヒントを表示
+    }
+  };
+
+  
+  const handleShowAnswer = async () => {
+    if (!questionTranslation) {
+        await handleFetchTranslation(); // 显示される前に翻訳を取得
     }
     setError(null); // エラーをリセット
 
-    
-    try {
-        // 問題文を英訳
-        const response = await fetch("/api/translate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: `日本語のクイズ文「${question}」に基づき、選択されたコロケーション「${answer}」を使った英訳を作成してください。`,
-            language: "en",
-          }),
-        });
-        const data = await response.json();
-        setQuestionTranslation(data.text); // 英訳結果を保存
+    setIsAnswerButtonClicked(true); // 正答の確認
 
+    try {
         // 類似度判定
         if (spokenText) {
             const similarityResponse = await fetch("/api/quizFeedback", {
@@ -147,7 +190,17 @@ const QuizPage = () => {
               <div className="border-b pb-4">
                 <p className="text-lg font-medium text-gray-700">Question:</p>
                 <p className="mt-1 text-gray-600">{question}</p>
+                <button 
+                    onClick={handleFetchHint} 
+                    className="px-4 py-1 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded">
+                    {showHint ? "Sorting!" : "Show Hint"}
+                </button>
               </div>
+              {showHint && hint && (
+                <div className="mt-2 text-gray-600">
+                    <p className="text-sm italic">Hint: {hint}</p>
+                </div>
+              )}
   
               <div className="border-b pb-4">
                 <p className="text-lg font-medium text-gray-700">Practice Collocation:</p>
@@ -183,7 +236,7 @@ const QuizPage = () => {
                   <p className="text-lg font-medium text-gray-700">Translation:</p>
                   <p className="mt-1 text-gray-600">{translation || "Translation will appear here."}</p>
                 </div>
-                {questionTranslation && (
+                {isAnswerButtonClicked && (
                     <div>
                         <p className="text-lg font-medium text-gray-700">Question Translation:</p>
                         <p className="mt-1 text-gray-600">{questionTranslation}</p>
