@@ -28,8 +28,8 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
             <Link href="/progress">
               <h1 className="text-lg font-bold">Progress</h1>
             </Link>
-            <Link href="/quiz">
-              <h1 className="text-lg font-bold">Quiz</h1>
+            <Link href="/preference">
+              <h1 className="text-lg font-bold">Preference</h1>
             </Link>
         </header>
         {children}
