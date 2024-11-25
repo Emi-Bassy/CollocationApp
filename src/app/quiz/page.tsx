@@ -15,6 +15,11 @@ const QuizPage = () => {
   const [translation, setTranslation] = useState<string>(""); // 翻訳結果
   const [questionTranslation, setQuestionTranslation] = useState<string>(""); // 問題文の英訳
 
+  const [similarity, setSimilarity] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState<string>("");
+  const [error, setError] = useState<string | null>(null); // エラーメッセージ
+
+
   const handleOnRecord = () => {
     if (isRecording) {
       setIsRecording(false); // 録音を停止
@@ -64,12 +69,15 @@ const QuizPage = () => {
   };
 
   const handleShowAnswer = async () => {
-    if (!question) {
+    if (!question || !answer) {
+        setError("Question or answer is missing.");
         return;
     }
+    setError(null); // エラーをリセット
 
-    // 問題文を英訳
+    
     try {
+        // 問題文を英訳
         const response = await fetch("/api/translate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -80,8 +88,35 @@ const QuizPage = () => {
         });
         const data = await response.json();
         setQuestionTranslation(data.text); // 英訳結果を保存
+
+        // 類似度判定
+        if (spokenText) {
+            const similarityResponse = await fetch("/api/quizFeedback", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userAnswer: spokenText,
+                    correctAnswer: answer,
+                }),
+            });
+
+            if (!similarityResponse.ok) {
+                throw new Error("Failed to fetch similarity.");
+            }
+
+            const similarityData = await similarityResponse.json();
+
+            if (similarityData.error || typeof similarityData.similarity !== "number") {
+                throw new Error("Similarity response is invalid.");
+            }
+
+            setSimilarity(similarityData.similarity);
+        } else {
+            setFeedback("No answer provided. Please speak your answer first.");
+        }
       } catch (error) {
-        console.error("Translation failed:", error);
+        console.error("Error fetching feedback:", error);
+        setError("An unexpected error occurred.");
       }
     };
 
@@ -165,6 +200,18 @@ const QuizPage = () => {
                     </div>
                 )}
               </div>
+              {error && (
+                <div className="mt-4 text-red-500">
+                    <p>Error: {error}</p>
+                </div>
+              )}
+              {similarity !== null && (
+              <div className="mt-6">
+                <p className="text-lg font-medium text-gray-700">Feedback:</p>
+                <p className="mt-1 text-gray-600">{feedback}</p>
+                <p className="mt-1 text-gray-500">類似度: {similarity}%</p>
+              </div>
+            )}
             </div>
           )}
         </div>
