@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, FormEvent } from "react";
@@ -6,12 +7,6 @@ import { SearchResults } from "./SearchResults";
 import { DetailView } from "./DetailView";
 import { fetchCollocations } from "@/app/api/collocation/route";
 import { CollocationResult } from "@/app/lib/types";
-
-// Supabase のクライアントを初期化
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 export default function SearchForm() {
   const [searchTerm, setSearchTerm] = useState("");
