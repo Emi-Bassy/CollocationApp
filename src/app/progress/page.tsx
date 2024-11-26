@@ -1,5 +1,4 @@
 import { supabase } from "@/app/lib/supabaseClient";
-import { CollocationResult } from "@/app/lib/types";
 
 export const metadata = {
   title: "Progress",
