@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { handleSpeak } from "@/utils/speech";
-import { text } from "stream/consumers";
-import { error } from "console";
 
 type AnswerData = {
     text: string
