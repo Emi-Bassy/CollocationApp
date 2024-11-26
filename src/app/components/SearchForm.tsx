@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { SearchResults } from "./SearchResults";
 import { DetailView } from "./DetailView";
 import { fetchCollocations } from "@/app/api/collocation/route";
