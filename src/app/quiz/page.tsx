@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { handleSpeak } from "@/utils/speech";
+import Image from "next/image";
 
 type AnswerData = {
     text: string
@@ -235,9 +236,11 @@ const QuizPage = () => {
                             onClick={() => handleSpeak(questionTranslation)} // コロケーションの読み上げ
                             className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
                             >
-                            <img
+                            <Image
                                 src="/microphone.svg"
                                 alt="Speak"
+                                width={100}
+                                height={100}
                                 className="w-4 h-4"
                             />
                         </button>
