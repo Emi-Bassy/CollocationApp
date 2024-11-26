@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CollocationResult } from "@/app/lib/types";
 import { relationMap } from "@/app/lib/types";
+import { handleSpeak } from "@/utils/speech";
 import { supabase } from '@/app/lib/supabaseClient';
 
 interface DetailViewProps {
@@ -83,13 +84,6 @@ export function DetailView({ result, onClose }: DetailViewProps) {
     fetchTranslations();
   }, []);
 
-  // コロケーションの読み上げ
-  const handleSpeak = () => {
-    const utterance = new SpeechSynthesisUtterance(result.collocation);
-    utterance.lang = "en-US";
-    window.speechSynthesis.speak(utterance);
-  }
-
   // クイズの作成
   const handleQuiz = async () => {
     const response = await fetch("api/quiz", {
@@ -118,7 +112,7 @@ export function DetailView({ result, onClose }: DetailViewProps) {
         </button>
         <h2 className="text-2xl font-bold mb-4">{result.collocation}</h2>
         <button
-          onClick={handleSpeak}
+          onClick={() => handleSpeak(result.collocation)} // コロケーションの読み上げ
           className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
         >
           <img

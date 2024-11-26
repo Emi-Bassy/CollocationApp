@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { handleSpeak } from "@/utils/speech";
 import { text } from "stream/consumers";
 import { error } from "console";
 
@@ -121,7 +122,6 @@ const QuizPage = () => {
         setShowHint(true); // ヒントを表示
     }
   };
-
   
   const handleShowAnswer = async () => {
     if (!questionTranslation) {
@@ -165,13 +165,6 @@ const QuizPage = () => {
 
   if (!question || !answer) {
     return <p>Loading...</p>; // クイズデータがロード中の場合
-  }
-
-  // コロケーションの読み上げ
-  const handleSpeak = () => {
-    const utterance = new SpeechSynthesisUtterance(questionTranslation);
-    utterance.lang = "en-US";
-    window.speechSynthesis.speak(utterance);
   }
 
   return (
@@ -241,7 +234,7 @@ const QuizPage = () => {
                         <p className="text-lg font-medium text-gray-700">Question Translation:</p>
                         <p className="mt-1 text-gray-600">{questionTranslation}</p>
                         <button
-                            onClick={handleSpeak}
+                            onClick={() => handleSpeak(questionTranslation)} // コロケーションの読み上げ
                             className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
                             >
                             <img
