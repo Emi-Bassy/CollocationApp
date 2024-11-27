@@ -181,12 +181,14 @@ const QuizPage = () => {
             <div className="space-y-4">
               <div className="border-b pb-4">
                 <p className="text-lg font-medium text-gray-700">Question:</p>
-                <p className="mt-1 text-gray-600">{question}</p>
-                <button 
-                    onClick={handleFetchHint} 
-                    className="px-4 py-1 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded">
-                    {showHint ? "Sorting!" : "Show Hint"}
-                </button>
+                <div className="flex items-center gap-6">
+                  <p className="mt-1 text-gray-600">{question}</p>
+                  <button 
+                      onClick={handleFetchHint} 
+                      className="px-4 py-1 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded">
+                      {showHint ? "Sorting!" : "Show Hint"}
+                  </button>
+                </div>
               </div>
               {showHint && hint && (
                 <div className="mt-2 text-gray-600">
@@ -199,7 +201,7 @@ const QuizPage = () => {
                 <p className="mt-1 text-gray-600">{answer}</p>
               </div>
   
-              <div className="flex justify-center py-4">
+              <div className="flex flex-col gap-2">
                 <button
                   onClick={handleOnRecord}
                   className={`px-6 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ${
@@ -215,7 +217,7 @@ const QuizPage = () => {
                     onClick={handleShowAnswer}
                     className="px-6 py-2 rounded-md text-sm font-semibold bg-blue-500 hover:bg-blue-600 text-white"
                 >
-                    答えを確認
+                    Check the answer
                 </button>
               </div>
   
@@ -231,19 +233,21 @@ const QuizPage = () => {
                 {isAnswerButtonClicked && (
                     <div>
                         <p className="text-lg font-medium text-gray-700">Question Translation:</p>
-                        <p className="mt-1 text-gray-600">{questionTranslation}</p>
-                        <button
-                            onClick={() => handleSpeak(questionTranslation)} // コロケーションの読み上げ
-                            className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
-                            >
-                            <Image
-                                src="/microphone.svg"
-                                alt="Speak"
-                                width={100}
-                                height={100}
-                                className="w-4 h-4"
-                            />
-                        </button>
+                        <div className="flex items-center gap-6">
+                          <p className="mt-1 text-gray-600">{questionTranslation}</p>
+                          <button
+                              onClick={() => handleSpeak(questionTranslation)} // コロケーションの読み上げ
+                              className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
+                              >
+                              <Image
+                                  src="/microphone.svg"
+                                  alt="Speak"
+                                  width={100}
+                                  height={100}
+                                  className="w-4 h-4"
+                              />
+                          </button>
+                        </div>
                     </div>
                 )}
               </div>
