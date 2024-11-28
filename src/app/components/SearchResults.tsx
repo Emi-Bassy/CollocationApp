@@ -1,7 +1,6 @@
 
 import { CollocationResult } from "@/app/lib/types";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 interface SearchResultsProps {
   results: CollocationResult[];
