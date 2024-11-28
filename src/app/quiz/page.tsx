@@ -131,6 +131,9 @@ const QuizPage = () => {
     setIsAnswerButtonClicked(true); // 正答の確認
 
     try {
+        // ユーザ回答と正解のログを表示
+        console.log("User Answer:", spokenText);
+        console.log("Correct Answer (Translation):", answer);
         // 類似度判定
         if (spokenText) {
             const similarityResponse = await fetch("/api/quizFeedback", {
@@ -148,10 +151,12 @@ const QuizPage = () => {
 
             const similarityData = await similarityResponse.json();
 
-            if (similarityData.error || typeof similarityData.similarity !== "number") {
-                throw new Error("Similarity response is invalid.");
-            }
+            console.log("Similarity Response (Raw):", similarityResponse);
+            console.log("Similarity Data (Parsed):", similarityData);
 
+            // if (similarityData.error || typeof similarityData.similarity !== "number") {
+            //     throw new Error("Similarity response is invalid.");
+            // }
             setSimilarity(similarityData.similarity);
         } else {
             setFeedback("No answer provided. Please speak your answer first.");
