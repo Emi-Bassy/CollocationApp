@@ -1,6 +1,7 @@
 "use client";
 
 import DOMPurify from "dompurify";
+import React, { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { relationMap } from "@/app/lib/types";
@@ -8,7 +9,17 @@ import { handleSpeak } from "@/utils/speech";
 import { supabase } from "@/app/lib/supabaseClient";
 
 export default function DetailPage() {
-  const router = useRouter();
+    const router = useRouter();
+  
+    return (
+      <Suspense fallback={<p>Loading...</p>}>
+        <DetailContent />
+      </Suspense>
+    );
+  }
+
+  function DetailContent() {
+    const router = useRouter();
   const collocationParams = useSearchParams();
   const searchCollocation = collocationParams.get("collocation");
   const searchRelation = collocationParams.get("relation");
@@ -33,7 +44,7 @@ export default function DetailPage() {
         body: JSON.stringify({ text: searchCollocation, language: "ja" }),
       });
 
-          // レスポンスが OK でなければエラーを投げる
+      // レスポンスが OK でなければエラーを投げる
       if (!collocationResponse.ok) {
         throw new Error(`Error: ${collocationResponse.status}`);
       }

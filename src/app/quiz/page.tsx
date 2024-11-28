@@ -1,5 +1,6 @@
 "use client";
 
+import React, { Suspense } from "react";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { handleSpeak } from "@/utils/speech";
@@ -10,6 +11,14 @@ type AnswerData = {
 }
 
 const QuizPage = () => {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <QuizContent />
+    </Suspense>
+  );
+};
+
+const QuizContent = () => {
   const searchParams = useSearchParams();
   const question = searchParams.get("question"); // クイズ文（日本語）
   const answer = searchParams.get("answer"); // ユーザの回答

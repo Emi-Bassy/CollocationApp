@@ -7,6 +7,7 @@ import { CollocationResult } from "@/app/lib/types";
 import { relationMap } from "@/app/lib/types";
 import { handleSpeak } from "@/utils/speech";
 import { supabase } from '@/app/lib/supabaseClient';
+import Image from 'next/image';
 
 interface DetailViewProps {
   result: CollocationResult;
@@ -103,24 +104,28 @@ export function DetailView({ result, onClose }: DetailViewProps) {
   };
 
   return (
-      <div className="text-black p-6 bg-white rounded-lg shadow-lg border">
+      <div className="text-black max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
         <button
           onClick={onClose}
           className="mb-4 px-3 py-1 bg-gray-300 text-white rounded hover:bg-red-600"
         >
           Close
         </button>
-        <h2 className="text-2xl font-bold mb-4">{result.collocation}</h2>
-        <button
-          onClick={() => handleSpeak(result.collocation)} // コロケーションの読み上げ
-          className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
-        >
-          <img
-            src="/microphone.svg"
-            alt="Speak"
-            className="w-4 h-4"
-          />
-        </button>
+        <div className="flex items-center mb-4">
+          <h2 className="text-2xl font-bold">{result.collocation}</h2>
+          <button
+            onClick={() => handleSpeak(result.collocation)} // コロケーションの読み上げ
+            className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 ml-2" // ml-2で左側にマージンを追加
+          >
+            <Image
+              src="/microphone.svg"
+              alt="Speak"
+              width={100}
+              height={100}
+              className="w-4 h-4"
+            />
+          </button>
+        </div>
         <p className="text-gray-700 mb-6">{collocationTranslation}</p>
         <div className="mb-4">
           <p className="font-medium text-gray-700">Relation: {result.relation}</p>
