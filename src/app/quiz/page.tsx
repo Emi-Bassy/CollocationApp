@@ -1,9 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import { handleSpeak } from "@/utils/speech";
 import Image from "next/image";
 
@@ -12,7 +9,6 @@ type AnswerData = {
 }
 
 const QuizPage = () => {
-  const router = useRouter();
   const [question, setQuestion] = useState<string | null>(null);
   const [answer, setAnswer] = useState<string | null>(null);
 
