@@ -12,7 +12,7 @@ type AnswerData = {
 
 const QuizPage = () => {
   return (
-    <Suspense fallback={<p>Loading...</p>}>
+    <Suspense>
       <QuizContent />
     </Suspense>
   );
@@ -254,7 +254,7 @@ const QuizContent = () => {
                               className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
                               >
                               <Image
-                                  src="/microphone.svg"
+                                  src="/Collo_SPEAK_logo.svg"
                                   alt="Speak"
                                   width={100}
                                   height={100}
