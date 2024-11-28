@@ -21,7 +21,8 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
   return (
     <html lang="en">
       <body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
-        <header className="flex justify-between bg-blue-600 p-4 text-white">
+        <header className="flex justify-end bg-blue-600 p-4 text-white">
+          <div className="flex space-x-6">
             <Link href="/">
               <h1 className="text-lg font-bold">Dictionary</h1>
             </Link>
@@ -31,6 +32,7 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
             <Link href="/preference">
               <h1 className="text-lg font-bold">Preference</h1>
             </Link>
+          </div>
         </header>
         {children}
       </body>
