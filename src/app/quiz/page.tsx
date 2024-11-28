@@ -1,7 +1,8 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { handleSpeak } from "@/utils/speech";
 import Image from "next/image";
@@ -11,17 +12,30 @@ type AnswerData = {
 }
 
 const QuizPage = () => {
+  const router = useRouter();
+  const [question, setQuestion] = useState<string | null>(null);
+  const [answer, setAnswer] = useState<string | null>(null);
+
+  useEffect(() => {
+    // クエリパラメータを取得
+    const query = new URLSearchParams(window.location.search);
+    setQuestion(query.get("question"));
+    setAnswer(query.get("answer"));
+  }, []);
+
+  if (!question || !answer) {
+    return <p>Loading...</p>; // データがない場合のフォールバック
+  }
+
   return (
-    <Suspense>
-      <QuizContent />
-    </Suspense>
+    <QuizContent question={question} answer={answer} />
   );
 };
 
-const QuizContent = () => {
-  const searchParams = useSearchParams();
-  const question = searchParams.get("question"); // クイズ文（日本語）
-  const answer = searchParams.get("answer"); // ユーザの回答
+const QuizContent = ({ question, answer }: { question: string; answer: string }) => {
+
+
+  console.log("Search Params:", {question, answer})
 
   const [isRecording, setIsRecording] = useState(false); // 録音状態
   const [spokenText, setSpokenText] = useState<string>(""); // 音声認識結果
