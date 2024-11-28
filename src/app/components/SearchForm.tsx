@@ -4,7 +4,7 @@
 import { useState, FormEvent } from "react";
 import { SearchResults } from "./SearchResults";
 import { DetailView } from "./DetailView";
-import { fetchCollocations } from "@/app/api/collocation/route";
+import { fetchCollocations } from "@/app/lib/fetchCollocation";
 import { CollocationResult } from "@/app/lib/types";
 
 export default function SearchForm() {
@@ -13,7 +13,7 @@ export default function SearchForm() {
   const [selectedResult, setSelectedResult] = useState<CollocationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  
   // コロケーションの検索
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -32,6 +32,7 @@ export default function SearchForm() {
       setResults([]);
     } else {
       setResults(response.collocations);
+
     }
 
     setLoading(false);
@@ -42,8 +43,11 @@ export default function SearchForm() {
       <h1 className="text-3xl font-bold text-center mb-8">Collocation Dictionary</h1>
       {!selectedResult ? (
         <>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex flex-col gap-2">
+          <form 
+            onSubmit={handleSubmit} 
+            className="flex flex-col items-center justify-center max-w-2xl mx-auto space-y-4"
+          >
+            <div className="flex flex-col gap-2 w-full">
               <label htmlFor="search" className="text-white text-sm font-medium text-gray-700">
                 Enter a word to find its collocations
               </label>
@@ -59,7 +63,7 @@ export default function SearchForm() {
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white p-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+              className="w-full max-w-2xl bg-blue-600 text-white p-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-blue-300"
               disabled={loading}
             >
               {loading ? "Searching..." : "Find Collocations"}
