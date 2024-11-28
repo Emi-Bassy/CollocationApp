@@ -5,12 +5,10 @@ import { useRouter } from "next/navigation";
 
 interface SearchResultsProps {
   results: CollocationResult[];
-  onResultClick: (result: CollocationResult) => void;
 }
 
-export function SearchResults({ results, onResultClick }: SearchResultsProps) {
+export function SearchResults({ results }: SearchResultsProps) {
   const sortedResults = [...results].sort((a, b) => b.frequency - a.frequency);
-  const router = useRouter();
   return (
     <div className="test-black bg-white p-6 rounded-lg shadow-lg border">
       <div className="test-black mb-6">
@@ -19,7 +17,7 @@ export function SearchResults({ results, onResultClick }: SearchResultsProps) {
       </div>
 
       <div className="test-black grid grid-cols-2 md:grid-cols-3 gap-4">
-        {sortedResults.map((result, index) => (
+        {sortedResults.map((result) => (
           <Link
             key={result.id}
             href ={{

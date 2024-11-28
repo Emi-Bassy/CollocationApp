@@ -77,7 +77,7 @@ export default function SearchForm() {
           )}
 
           {results.length > 0 && (
-            <SearchResults results={results} onResultClick={setSelectedResult}/>
+            <SearchResults results={results}/>
           )}
         </>
       ) : (
