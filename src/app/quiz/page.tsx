@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { handleSpeak } from "@/utils/speech";
-import Image from "next/image";
+// import Image from "next/image";
 
 type AnswerData = {
     text: string
