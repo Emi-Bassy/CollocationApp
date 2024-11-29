@@ -19,6 +19,8 @@ export default function DetailPage() {
   const [collocationTranslation, setCollocationTranslation] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [dataExists, setDataExists] = useState(true); 
+  const [error, setError] = useState<string | null>(null);
 
   const sanitizedExample = (html: string) => DOMPurify.sanitize(html);
 
@@ -32,15 +34,16 @@ export default function DetailPage() {
         },
         body: JSON.stringify({ text: searchCollocation, language: "ja" }),
       });
-
-      // レスポンスが OK でなければエラーを投げる
+  
       if (!collocationResponse.ok) {
-        throw new Error(`Error: ${collocationResponse.status}`);
+        const errorText = await collocationResponse.text();
+        throw new Error(`API Error: ${collocationResponse.status} - ${errorText}`);
       }
-
+  
       const collocationData = await collocationResponse.json();
       setCollocationTranslation(collocationData.text);
-
+      console.log("Collocation translation response:", collocationData);
+  
       // 例文の和訳を取得
       const exampleResponse = await Promise.all(
         searchedEXample.map(async (example) => {
@@ -51,21 +54,30 @@ export default function DetailPage() {
             },
             body: JSON.stringify({ text: example, language: "ja" }),
           });
-
-          // レスポンスが OK でなければエラーを投げる
+  
           if (!response.ok) {
-            throw new Error(`Error: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`API Error: ${response.status} - ${errorText}`);
           }
-
+  
           const data = await response.json();
+          console.log("Example translation response:", data);
           return DOMPurify.sanitize(data.text); // サニタイザーを適用
         })
       );
+  
       setExampleTranslation(exampleResponse);
-     } catch (error) {
-       console.error("Error fetching translations:", error);
+    } catch (error: any) {
+      setError(`Failed to fetch translations: ${error.message}`);
+      console.error("Error fetching translations:", error);
     }
   };
+  
+  // UIでエラーを表示
+  {error && (
+    <p className="text-red-600 text-center mt-4">{error}</p>
+  )}
+  
 
   useEffect(() => {
     fetchTranslations();

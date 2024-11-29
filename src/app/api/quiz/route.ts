@@ -26,6 +26,7 @@ export async function POST(request: Request) {
         
         #ルール
         - 問題文は必ず${collocation}を使った文章を作成する
+        - ${collocation}と同義の別の表現を使用していた場合は、必ず${collocation}を使用するよう変更する
         - 問題である文章のみ表示する
         - 英単語で必ず10単語以下で表現できる文章を作成する
         - 英語能力が初級の人が知っている言葉を使う

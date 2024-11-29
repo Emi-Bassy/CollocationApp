@@ -281,7 +281,7 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
               {similarity !== null && (
               <div className="mt-6">
                 <p className="text-lg font-medium text-gray-700">Feedback:</p>
-                <p className="mt-1 text-gray-500">類似度: {similarity}%</p>
+                {/* <p className="mt-1 text-gray-500">類似度: {similarity}%</p> */}
                 <p className="mt-1 text-gray-500">{feedback}</p>
               </div>
             )}
