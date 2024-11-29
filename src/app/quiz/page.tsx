@@ -146,7 +146,6 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
         await handleFetchTranslation(); // 显示される前に翻訳を取得
     }
     setError(null); // エラーをリセット
-
     setIsAnswerButtonClicked(true); // 正答の確認
 
     try {
@@ -173,10 +172,8 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
             console.log("Similarity Response (Raw):", similarityResponse);
             console.log("Similarity Data (Parsed):", similarityData);
 
-            // if (similarityData.error || typeof similarityData.similarity !== "number") {
-            //     throw new Error("Similarity response is invalid.");
-            // }
             setSimilarity(similarityData.similarity);
+            setFeedback(similarityData.reason || "No feedback provided.");
         } else {
             setFeedback("No answer provided. Please speak your answer first.");
         }
@@ -263,12 +260,12 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
                               onClick={() => handleSpeak(questionTranslation)} // コロケーションの読み上げ
                               className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
                               >
-                              <Image
-                                  src="/Collo_SPEAK_logo.svg"
-                                  alt="Speak"
-                                  width={100}
-                                  height={100}
-                                  className="w-4 h-4"
+                              <img
+                                src="/Collo_SPEAK_logo1.svg"
+                                alt="Speak"
+                                width={100}
+                                height={100}
+                                className="w-4 h-4"
                               />
                           </button>
                         </div>
@@ -283,8 +280,8 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
               {similarity !== null && (
               <div className="mt-6">
                 <p className="text-lg font-medium text-gray-700">Feedback:</p>
-                <p className="mt-1 text-gray-600">{feedback}</p>
                 <p className="mt-1 text-gray-500">類似度: {similarity}%</p>
+                <p className="mt-1 text-gray-500">{feedback}</p>
               </div>
             )}
             </div>
