@@ -1,6 +1,6 @@
 import { Inter, Roboto_Mono } from "next/font/google";
 import Link from "next/link";
-import Image from 'next/image';
+// import Image from 'next/image';
 import "./globals.css";
 
 const inter = Inter({
@@ -24,13 +24,14 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
       <body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
         <header className="flex justify-between bg-blue-600 p-4 text-white">
           <div className="flex items-center space-x-4">
-            <Image
-                  src="/COLLO_SPEAK_logo_header.png"
+            {/* <Image
+                  src="/COLLO_SPEAK_logo_header.svg"
                   alt="logo"
                   width={100}
                   height={100}
                   className="w-20 h-10"
-                />       
+                />  */}
+            <img src="/Collo_SPEAK_logo4.svg" alt="logo" className="w-20 h-10" />      
           </div>
 
           <div className="flex space-x-6">

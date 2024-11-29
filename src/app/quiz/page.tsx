@@ -260,13 +260,14 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
                               onClick={() => handleSpeak(questionTranslation)} // コロケーションの読み上げ
                               className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
                               >
-                              <Image
+                              {/* <Image
                                 src="/COLLO_SPEAK_logo_logo1.svg"
                                 alt="logo"
                                 width={100}
                                 height={100}
                                 className="w-20 h-10"
-                              />     
+                              />      */}
+                              <img src="/microphone.svg" alt="logo" className="w-20 h-10" />      
                           </button>
                         </div>
                     </div>

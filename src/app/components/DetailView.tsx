@@ -7,7 +7,7 @@ import { CollocationResult } from "@/app/lib/types";
 import { relationMap } from "@/app/lib/types";
 import { handleSpeak } from "@/utils/speech";
 import { supabase } from '@/app/lib/supabaseClient';
-import Image from 'next/image';
+// import Image from 'next/image';
 
 interface DetailViewProps {
   result: CollocationResult;
@@ -117,13 +117,14 @@ export function DetailView({ result, onClose }: DetailViewProps) {
             onClick={() => handleSpeak(result.collocation)} // コロケーションの読み上げ
             className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 ml-2" // ml-2で左側にマージンを追加
           >
-            <Image
+            {/* <Image
               src="/microphone.svg"
               alt="Speak"
               width={100}
               height={100}
               className="w-4 h-4"
-            />
+            /> */}
+            <img src="/microphone.svg" alt="logo" className="w-20 h-10" />      
           </button>
         </div>
         <p className="text-gray-700 mb-6">{collocationTranslation}</p>
