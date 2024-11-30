@@ -2,6 +2,15 @@
 
 import { useEffect, useRef } from "react";
 
+type Element = {
+    x: number;
+    y: number;
+    size: number;
+    dx: number;
+    dy: number;
+    draw: (ctx: CanvasRenderingContext2D, time: number) => void;
+};
+
 const CanvasAnimation = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -21,29 +30,29 @@ const CanvasAnimation = () => {
     window.addEventListener("resize", resize);
     resize();
 
-    const elements: any[] = [];
+    const elements: Element[] = [];
     const imageSrc = "/puzzle.png"; // 画像のパスを指定
     const image = new Image();
     image.src = imageSrc;
 
     // オブジェクトの設定
-    const createImageElement = (x: number, y: number, s: number, dx: number, dy: number) => ({
-      x,
-      y,
-      size: 140 * s, // サイズを小さく設定
-      dx,
-      dy,
-      draw: function (ctx: CanvasRenderingContext2D, t: number) {
-        this.x += this.dx;
-        this.y += this.dy;
-
-        // 画面外に出たら位置をリセット
-        if (this.x > canvas.width || this.x < 0) this.dx *= -1;
-        if (this.y > canvas.height || this.y < 0) this.dy *= -1;
-
-        // 画像を描画
-        ctx.drawImage(image, this.x, this.y, this.size, this.size);
-      },
+    const createImageElement = (x: number, y: number, s: number, dx: number, dy: number): Element => ({
+        x,
+        y,
+        size: 140 * s,
+        dx,
+        dy,
+        draw: function (ctx: CanvasRenderingContext2D, time: number) {
+            this.x += this.dx;
+            this.y += this.dy;
+        
+            // 画面外に出たら位置をリセット
+            if (this.x > canvas.width || this.x < 0) this.dx *= -1;
+            if (this.y > canvas.height || this.y < 0) this.dy *= -1;
+        
+            // 画像を描画（timeを使う場合に対応可能）
+            ctx.drawImage(image, this.x, this.y, this.size, this.size);
+        },
     });
 
     // 画像がロードされたらオブジェクトを生成
