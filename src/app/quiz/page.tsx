@@ -228,7 +228,7 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
                   className={`px-6 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ${
                     isRecording
                       ? "bg-red-500 hover:bg-red-600 text-white"
-                      : "bg-zinc-900 hover:bg-zinc-800 text-zinc-100"
+                      : "bg-green-600 hover:bg-zinc-800 text-zinc-100"
                   }`}
                 >
                   {isRecording ? "Stop" : "Start Recording"}
