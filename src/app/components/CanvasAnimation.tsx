@@ -8,7 +8,7 @@ type Element = {
     size: number;
     dx: number;
     dy: number;
-    draw: (ctx: CanvasRenderingContext2D, time: number) => void;
+    draw: (ctx: CanvasRenderingContext2D) => void;
 };
 
 const CanvasAnimation = () => {
@@ -42,7 +42,7 @@ const CanvasAnimation = () => {
         size: 140 * s,
         dx,
         dy,
-        draw: function (ctx: CanvasRenderingContext2D, time: number) {
+        draw: function (ctx: CanvasRenderingContext2D) {
             this.x += this.dx;
             this.y += this.dy;
         
@@ -72,7 +72,7 @@ const CanvasAnimation = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const time = new Date().getTime();
       for (const e of elements) {
-        e.draw(ctx, time);
+        e.draw(ctx);
       }
       requestAnimationFrame(render);
     };
