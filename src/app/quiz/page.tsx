@@ -188,7 +188,7 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
   }
 
   return (
-    <div className="min-h-screen bg-black p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8">Quiz</h1>
   

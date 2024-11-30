@@ -2,6 +2,7 @@ import { Inter, Roboto_Mono } from "next/font/google";
 import Link from "next/link";
 // import Image from 'next/image';
 import "./globals.css";
+import CanvasAnimation from "./components/CanvasAnimation";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,6 +23,10 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
   return (
     <html lang="en">
       <body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
+        <div className="fixed inset-0 -z-10">
+          <CanvasAnimation />
+        </div>
+        
         <header className="flex justify-between bg-blue-600 p-4 text-white">
           <div className="flex items-center space-x-4">
             {/* <Image

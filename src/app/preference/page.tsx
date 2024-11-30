@@ -25,7 +25,7 @@ const PreferencePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
         <h1 className="text-2xl text-black font-bold text-center mb-4">Preferences</h1>
         <div className="space-y-4">
