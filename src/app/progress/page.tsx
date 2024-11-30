@@ -1,5 +1,6 @@
 import { supabase } from "@/app/lib/supabaseClient";
 import ProgressList from "./ProgressList"
+import Providers from "@/app/components/Providers";
 
 export const metadata = {
   title: "Progress",
@@ -18,5 +19,9 @@ export default async function ProgressPage() {
     );
   }
 
-  return <ProgressList progress={progress || []} />;
+  return (
+    <Providers>
+      <ProgressList progress={progress || []} />
+    </Providers>
+  );
 }
