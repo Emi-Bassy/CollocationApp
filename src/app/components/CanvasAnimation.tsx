@@ -8,7 +8,7 @@ type Element = {
     size: number;
     dx: number;
     dy: number;
-    draw: (ctx: CanvasRenderingContext2D) => void;
+    draw: (ctx: CanvasRenderingContext2D, time: number) => void;
 };
 
 const CanvasAnimation = () => {
@@ -39,11 +39,11 @@ const CanvasAnimation = () => {
     const createImageElement = (x: number, y: number, s: number, dx: number, dy: number): Element => ({
         x,
         y,
-        size: 140 * s,
+        size: 150 * s,
         dx,
         dy,
-        draw: function (ctx: CanvasRenderingContext2D) {
-            this.x += this.dx;
+        draw: function (ctx: CanvasRenderingContext2D, time: number) {
+            this.x += this.dx + Math.sin(time / 2000); // 時間に基づいた動き
             this.y += this.dy;
         
             // 画面外に出たら位置をリセット
@@ -72,7 +72,7 @@ const CanvasAnimation = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const time = new Date().getTime();
       for (const e of elements) {
-        e.draw(ctx);
+        e.draw(ctx, time);
       }
       requestAnimationFrame(render);
     };
