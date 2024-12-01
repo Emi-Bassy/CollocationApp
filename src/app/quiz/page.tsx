@@ -142,49 +142,45 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
   
   const handleShowAnswer = async () => {
     if (!questionTranslation) {
-        await handleFetchTranslation(); // 显示される前に翻訳を取得
+      await handleFetchTranslation(); // 問題文を翻訳して取得
     }
-    setError(null); // エラーをリセット
-    setIsAnswerButtonClicked(true); // 正答の確認
-
+  
+    setError(null);
+    setIsAnswerButtonClicked(true);
+  
     try {
-        // ユーザ回答と正解のログを表示
-        console.log("User Answer:", spokenText);
-        console.log("Correct Answer (Translation):", answer);
-        // 類似度判定
-        if (spokenText) {
-            const similarityResponse = await fetch("/api/quizFeedback", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    userAnswer: spokenText,
-                    correctAnswer: answer,
-                }),
-            });
-
-            if (!similarityResponse.ok) {
-                throw new Error("Failed to fetch similarity.");
-            }
-
-            const similarityData = await similarityResponse.json();
-
-            console.log("Similarity Response (Raw):", similarityResponse);
-            console.log("Similarity Data (Parsed):", similarityData);
-
-            setSimilarity(similarityData.similarity);
-            setFeedback(similarityData.reason || "No feedback provided.");
-        } else {
-            setFeedback("No answer provided. Please speak your answer first.");
+      console.log("User Answer:", spokenText);
+      console.log("Correct Answer:", answer);
+  
+      if (spokenText) {
+        const similarityResponse = await fetch("/api/quizFeedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userAnswer: spokenText.trim(),
+            correctAnswer: answer.trim(),
+          }),
+        });
+  
+        if (!similarityResponse.ok) {
+          throw new Error(`Failed to fetch similarity. HTTP ${similarityResponse.status}`);
         }
-      } catch (error) {
-        console.error("Error fetching feedback:", error);
-        setError("An unexpected error occurred.");
+  
+        const { feedback, reason } = await similarityResponse.json();
+  
+        console.log("Feedback (English):", feedback);
+        console.log("Reason (Japanese):", reason);
+  
+        setFeedback(`${feedback} - ${reason}`);
+      } else {
+        setFeedback("No input detected. Please provide your answer.");
       }
-    };
-
-  if (!question || !answer) {
-    return <p>Loading...</p>; // クイズデータがロード中の場合
-  }
+    } catch (error) {
+      console.error("Error during similarity evaluation:", error);
+      setError("Could not evaluate your answer. Please try again.");
+    }
+  };
+  
 
   return (
     <div className="min-h-screen p-6">
@@ -270,13 +266,12 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
                     <p>Error: {error}</p>
                 </div>
               )}
-              {similarity !== null && (
-              <div className="mt-6">
-                <p className="text-lg font-medium text-gray-700">Feedback:</p>
-                <p className="mt-1 text-gray-500">類似度: {similarity}%</p>
-                <p className="mt-1 text-gray-500">{feedback}</p>
-              </div>
-            )}
+              {feedback && (
+                <div className="mt-6">
+                  <p className="text-lg font-medium text-gray-700">Feedback:</p>
+                  <p className="mt-1 text-gray-500">{feedback}</p>
+                </div>
+              )}
             </div>
           )}
         </div>

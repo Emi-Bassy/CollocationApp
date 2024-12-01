@@ -11,27 +11,31 @@ export async function POST(request: Request) {
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
           content: `
-          あなたは言語評価者です。あなたの任務は、2つの英語の文がどれほど似ているかを0から100のスケールで評価し、以下の基準に従ってフィードバックメッセージを生成してください。
-          
-          - 80以上100以下: Excellent!
-          - 60以上80未満: Great job!
-          - 40以上60未満: Good effort!
-          - 20以上40未満: Good try! Keep it up!
-          - 0以上20未満: Keep trying!
-          
-          - 類似性のパーセンテージを数値として出力し、その後に評価メッセージを返してください。
-          - 両方の文が同一であれば、100を返してください。
-          - 文に類似性が全くない場合は、0を返してください。
+          あなたは言語評価者です。あなたの任務は、2つの英語の文がどれほど似ているかを評価し、以下の基準に従ってフィードバックを提供してください。
+
+          # 基準
+          - 80以上100以下: "Excellent!" (英語)
+          - 60以上80未満: "Great job!" (英語)
+          - 40以上60未満: "Good effort!" (英語)
+          - 20以上40未満: "Good try! Keep it up!" (英語)
+          - 0以上20未満: "Keep trying!" (英語)
+
+          # 出力
+          - 1行目に短文（英語）を出力してください。
+          - 2行目に日本語で評価の理由を説明してください。
+          - 出力の例:
+            Excellent!
+            文法、スペル、意味が完全に一致しています。
           `,
         },
         {
           role: "user",
-          content: `2つの値を比較してください:
+          content: `以下の2つの文を比較してください:
           1. ${userAnswer}
           2. ${correctAnswer}`,
         },
@@ -41,15 +45,14 @@ export async function POST(request: Request) {
     });
 
     const content = response.choices[0]?.message?.content || "";
-    const [similarityScoreString, feedbackMessage] = content.split("\n").map(line => line.trim());
-    const similarityScore = parseFloat(similarityScoreString) || 0;
-    
-    return NextResponse.json({ 
-      similarity: similarityScore,
-      feedback: feedbackMessage || "評価理由が提供されていません。"
+    const [shortFeedback, reason] = content.split("\n").map((line) => line.trim());
+
+    return NextResponse.json({
+      feedback: shortFeedback || "No feedback available.",
+      reason: reason || "理由が提供されていません。",
     });
   } catch (error) {
-    console.error("Error calculating similarity:", error);
-    return NextResponse.json({ error: "Failed to calculate similarity" });
+    console.error("Error calculating feedback:", error);
+    return NextResponse.json({ error: "Failed to calculate feedback" });
   }
 }

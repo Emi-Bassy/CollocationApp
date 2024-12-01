@@ -7,7 +7,7 @@ const openai = new OpenAI({
 });
 
 export async function POST(request: Request) {
-  const { question } = await request.json();
+  const { question, collocation } = await request.json();
 
   try {
     const response = await openai.chat.completions.create({
@@ -17,22 +17,25 @@ export async function POST(request: Request) {
           role: "system",
           content: `
             あなたは言語学習者向けのクイズアシスタントです。
-            クイズ文に基づいて簡単なヒントを作成してください。
-            ヒントは以下の条件に従うものとします。
-            - クイズの答えを直接記載しない。
-            - クイズ文を理解するのに役立つ説明や背景を1文で提供する。
+            クイズの問題文と指定されたコロケーションに基づいてヒントを生成してください。
+
+            #ルール
+            - ヒントには必ず「${collocation}」が含まれる必要があります。
+            - コロケーションを活用し、問題文を理解する助けになる1文の説明を作成してください。
+            - ${collocation}を使わないヒントを生成しないでください。
+            - ヒントは学習者にわかりやすいシンプルな言葉を用いてください。
           `,
         },
         {
           role: "user",
-          content: `Provide a hint for this quiz question: "${question}"`,
+          content: `問題文: "${question}" に基づいてヒントを作成してください。`,
         },
       ],
       temperature: 0.7,
       max_tokens: 50,
     });
 
-    const hint = response.choices[0]?.message?.content || "Hint generation failed.";
+    const hint = response.choices[0]?.message?.content || "ヒントの生成に失敗しました。";
     return NextResponse.json({ hint });
   } catch (error) {
     console.error("Error generating hint:", error);

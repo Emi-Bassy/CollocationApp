@@ -20,16 +20,19 @@ export async function POST(request: Request) {
           "content": `
           # 役割  
           あなたは入力された文章を翻訳する翻訳アシスタントです。
+          あなたは英語と日本語のネイティブスピーカーです。
   
           # タスク
           - 入力された文章を${language}に変換します。
+          - 入力された文章をネイティブにとって自然な意味になるように変換します。
+          - 翻訳後の文章は${language}の言語のみで作成してください。
           - 翻訳した文章以外は返さないでください。
           - 以降は入力された文章を翻訳してください。
           `
         },
         {
           "role": "user",
-          "content": text
+          "content": `翻訳してください: ${text}`,
         }
       ],
       temperature: 0.7,
@@ -37,13 +40,10 @@ export async function POST(request: Request) {
       top_p: 1,
     });
 
-    return NextResponse.json({
-      text: response.choices[0].message.content
-    });
-  } catch (error){
-    console.log(error)
+    const translatedText = response.choices[0]?.message?.content || "翻訳に失敗しました。";
+    return NextResponse.json({ text: translatedText });
+  } catch (error) {
+    console.error("Translation error:", error);
+    return NextResponse.json({ error: "Failed to translate." });
   }
-  
-
-
 }

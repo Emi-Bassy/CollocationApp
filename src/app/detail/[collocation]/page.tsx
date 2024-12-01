@@ -20,7 +20,6 @@ export default function DetailPage() {
   const [collocationTranslation, setCollocationTranslation] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  // const [dataExists, setDataExists] = useState(true); 
   const [error, setError] = useState<string | null>(null);
 
   const sanitizedExample = (html: string) => DOMPurify.sanitize(html);
@@ -108,6 +107,11 @@ export default function DetailPage() {
   };
 
   const handleQuiz = async () => {
+    if (!searchCollocation) {
+      setMessage("Collocation is missing.");
+      return;
+    }
+
     const response = await fetch("/api/quiz", {
       method: "POST",
       headers: {
@@ -117,6 +121,11 @@ export default function DetailPage() {
         collocation: searchCollocation,
       }),
     });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch quiz.");
+    }
+
     const quizData = await response.json();
     router.push(`/quiz?question=${encodeURIComponent(quizData.question)}&answer=${encodeURIComponent(quizData.answer)}`);
   };
