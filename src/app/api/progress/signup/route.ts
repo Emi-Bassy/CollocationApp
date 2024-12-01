@@ -16,16 +16,35 @@ export async function POST(req: Request) {
   }
 
   try {
+    // ユーザー名の重複チェック
+    const { data: existingUser, error: fetchError } = await supabase
+      .from("app_user")
+      .select("id")
+      .eq("username", username)
+      .single();
+
+    if (fetchError && fetchError.code !== "PGRST116") {
+      // "PGRST116" はデータが見つからない場合のエラーコード（Supabase 固有）
+      return NextResponse.json({ error: fetchError.message }, { status: 500 });
+    }
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "Username already exists. Please choose a different username." },
+        { status: 409 } // 409 Conflict
+      );
+    }
+
     // パスワードのハッシュ化
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Supabase テーブルにユーザーを挿入
-    const insertResult = await supabase
+    // 新しいユーザーを挿入
+    const { error: insertError } = await supabase
       .from("app_user")
       .insert([{ username, password: hashedPassword }]);
 
-    if (insertResult.error) {
-      return NextResponse.json({ error: insertResult.error.message }, { status: 500 });
+    if (insertError) {
+      return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
 
     return NextResponse.json({ message: "User signed up successfully" }, { status: 200 });
