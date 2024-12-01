@@ -1,8 +1,7 @@
-import NextAuth, { AuthOptions } from "next-auth";
-import { JWT } from "next-auth/jwt";
-import { Session } from "next-auth";
-import { createClient } from "@supabase/supabase-js";
+import NextAuth from "next-auth";
+import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { createClient } from "@supabase/supabase-js";
 
 interface Credentials {
   username: string;
@@ -20,7 +19,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 );
 
-export const authOptions: AuthOptions = {
+const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -37,8 +36,8 @@ export const authOptions: AuthOptions = {
         const { username, password } = credentials as Credentials;
 
         if (!username || !password) {
-            console.error("Missing credentials");
-            return null;
+          console.error("Missing credentials");
+          return null;
         }
 
         try {
@@ -70,12 +69,12 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, token }: { session: Session; token: JWT }) {
-        if (token.sub) {
-          (session.user as CustomUser).id = token.sub; 
-        }
-        return session;
+    async session({ session, token }) {
+      if (token.sub) {
+        (session.user as CustomUser).id = token.sub;
       }
+      return session;
+    },
   },
   pages: {
     signIn: "/login",
@@ -83,7 +82,7 @@ export const authOptions: AuthOptions = {
     error: "/login",
   },
   session: {
-    strategy: "jwt" as const,
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
