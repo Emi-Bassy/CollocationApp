@@ -167,6 +167,9 @@ export default function DetailPage() {
             </ul>
         </div>
         <div className="flex flex-col">
+            {error && (
+              <p className="text-red-600 text-center mt-4">{error}</p>
+            )}
             <button
                 onClick={handleQuiz}
                 className="bg-blue-500 text-white py-2 px-4 rounded mt-4"
