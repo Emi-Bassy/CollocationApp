@@ -73,11 +73,6 @@ export default function DetailPage() {
       console.error("Error fetching translations:", error);
     }
   }
-    
-    // UIでエラーを表示
-    {error && (
-      <p className="text-red-600 text-center mt-4">{error}</p>
-    )}
   
   useEffect(() => {
     fetchTranslations();
