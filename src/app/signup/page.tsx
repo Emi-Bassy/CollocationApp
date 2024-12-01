@@ -52,6 +52,7 @@ export default function SignUpPage() {
               onChange={(e) => setUsername(e.target.value)}
               className="mt-1 block text-black w-full p-2 border rounded-md"
               placeholder="Enter your username"
+              autoComplete="username"
             />
           </div>
           <div>
@@ -65,6 +66,7 @@ export default function SignUpPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block text-black w-full p-2 border rounded-md"
               placeholder="Enter your password"
+              autoComplete="current-password"
             />
           </div>
           <button
