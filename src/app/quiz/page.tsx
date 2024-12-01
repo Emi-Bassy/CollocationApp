@@ -36,7 +36,7 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
   const [spokenText, setSpokenText] = useState<string>(""); // 音声認識結果
   const [translation, setTranslation] = useState<string>(""); // 翻訳結果
   const [questionTranslation, setQuestionTranslation] = useState<string>(""); // 問題文の英訳
-  const [similarity, setSimilarity] = useState<number | null>(null);
+  // const [similarity, setSimilarity] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<string>("");
   const [error, setError] = useState<string | null>(null); // エラーメッセージ
   const [hint, setHint] = useState<string | null>(null); // ヒント内容
@@ -163,20 +163,21 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
         });
   
         if (!similarityResponse.ok) {
-          throw new Error(`Failed to fetch similarity. HTTP ${similarityResponse.status}`);
+          throw new Error(`Failed to fetch feedback. HTTP ${similarityResponse.status}`);
         }
   
-        const { feedback, reason } = await similarityResponse.json();
+        const { feedback } = await similarityResponse.json();
   
         console.log("Feedback (English):", feedback);
-        console.log("Reason (Japanese):", reason);
+        // console.log("Reason (Japanese):", reason);
   
-        setFeedback(`${feedback} - ${reason}`);
+        // フィードバックの状態を更新
+        setFeedback(`${feedback}`);
       } else {
         setFeedback("No input detected. Please provide your answer.");
       }
     } catch (error) {
-      console.error("Error during similarity evaluation:", error);
+      console.error("Error during feedback evaluation:", error);
       setError("Could not evaluate your answer. Please try again.");
     }
   };

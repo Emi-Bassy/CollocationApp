@@ -27,10 +27,6 @@ export async function POST(request: Request) {
 
           # 出力
           - 1行目に短文（英語）を出力してください。
-          - 2行目に日本語で評価の理由を説明してください。
-          - 出力の例:
-            Excellent!
-            文法、スペル、意味が完全に一致しています。
           `,
         },
         {
@@ -45,11 +41,11 @@ export async function POST(request: Request) {
     });
 
     const content = response.choices[0]?.message?.content || "";
-    const [shortFeedback, reason] = content.split("\n").map((line) => line.trim());
+    const [shortFeedback] = content.split("\n").map((line) => line.trim());
 
     return NextResponse.json({
       feedback: shortFeedback || "No feedback available.",
-      reason: reason || "理由が提供されていません。",
+      // reason: reason || "理由が提供されていません。",
     });
   } catch (error) {
     console.error("Error calculating feedback:", error);
