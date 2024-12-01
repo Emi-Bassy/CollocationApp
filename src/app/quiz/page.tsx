@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { handleSpeak } from "@/utils/speech";
-// import Image from "next/image";
 
 type AnswerData = {
     text: string
@@ -260,13 +259,6 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
                               onClick={() => handleSpeak(questionTranslation)} // コロケーションの読み上げ
                               className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
                               >
-                              {/* <Image
-                                src="/COLLO_SPEAK_logo_logo1.svg"
-                                alt="logo"
-                                width={100}
-                                height={100}
-                                className="w-20 h-10"
-                              />      */}
                               <img src="/microphone.svg" alt="logo" className="w-20 h-10" />      
                           </button>
                         </div>
@@ -281,7 +273,7 @@ const QuizContent = ({ question, answer }: { question: string; answer: string })
               {similarity !== null && (
               <div className="mt-6">
                 <p className="text-lg font-medium text-gray-700">Feedback:</p>
-                {/* <p className="mt-1 text-gray-500">類似度: {similarity}%</p> */}
+                <p className="mt-1 text-gray-500">類似度: {similarity}%</p>
                 <p className="mt-1 text-gray-500">{feedback}</p>
               </div>
             )}
