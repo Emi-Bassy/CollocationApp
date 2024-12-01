@@ -39,12 +39,12 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 新しいユーザーを挿入
-    const { error: insertError } = await supabase
+    const insertResult = await supabase
       .from("app_user")
       .insert([{ username, password: hashedPassword }]);
 
-    if (insertError) {
-      return NextResponse.json({ error: insertError.message }, { status: 500 });
+    if (insertResult.error) {
+      return NextResponse.json({ error: insertResult.error.message }, { status: 500 });
     }
 
     return NextResponse.json({ message: "User signed up successfully" }, { status: 200 });
