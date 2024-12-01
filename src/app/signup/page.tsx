@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/app/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
@@ -20,17 +19,26 @@ export default function SignUpPage() {
     }
 
     try {
-      const { error: insertError } = await supabase
-        .from("app_user")
-        .insert([{ username, password }]);
+      const response = await fetch("/api/progress/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-      if (insertError) throw new Error(insertError.message);
-
-      alert("Sign up successful! Please log in.");
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to sign up.");
+        } else {
+          throw new Error("Unexpected response from server.");
+        }
+      }
+  
+      alert("Success");
       router.push("/login");
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "An error occurred during sign up.";
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An error occurred.";
       setError(errorMessage);
     }
   };
@@ -38,7 +46,7 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl text-black font-bold mb-4 text-center">Sign Up</h1>
+        <h1 className="text-2xl font-bold text-black mb-4 text-center">Sign Up</h1>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSignUp} className="space-y-4">
           <div>
@@ -76,6 +84,12 @@ export default function SignUpPage() {
             Sign Up
           </button>
         </form>
+        <button
+          onClick={() => router.push("/login")}
+          className="mt-4 w-full py-2 px-4 bg-gray-200 text-black rounded hover:bg-gray-300"
+        >
+          Go to Login
+        </button>
       </div>
     </div>
   );

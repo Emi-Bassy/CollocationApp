@@ -2,18 +2,9 @@ import NextAuth from "next-auth";
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { createClient } from "@supabase/supabase-js";
+import bcrypt from "bcrypt";
 
-interface Credentials {
-  username: string;
-  password: string;
-}
-
-interface CustomUser {
-  id: string;
-  name: string | null;
-}
-
-// Supabaseクライアントのセットアップ
+// Supabase クライアントのセットアップ
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
@@ -28,41 +19,33 @@ const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        if (!credentials) {
-          console.error("Missing credentials");
-          return null;
-        }
+        if (!credentials) return null;
 
-        const { username, password } = credentials as Credentials;
-
-        if (!username || !password) {
-          console.error("Missing credentials");
-          return null;
-        }
+        const { username, password } = credentials;
 
         try {
-          // Supabaseでユーザー情報を取得
+          // Supabase からユーザー情報を取得
           const { data: user, error } = await supabase
             .from("app_user")
             .select("*")
             .eq("username", username)
-            .eq("password", password) // パスワードを直接比較
             .single();
 
-          if (error) {
-            console.error("Supabase error:", error.message);
+          if (error || !user) {
+            console.error("User not found:", error);
             return null;
           }
 
-          if (user) {
-            console.log("User found:", user); // デバッグログ
-            return { id: user.id, name: user.username }; // ログイン成功
-          } else {
-            console.error("Invalid credentials");
-            return null; // ユーザーが見つからない場合
+          // パスワードの検証
+          const isPasswordValid = await bcrypt.compare(password, user.password);
+          if (!isPasswordValid) {
+            console.error("Invalid password");
+            return null;
           }
+
+          return { id: user.id, name: user.username };
         } catch (err) {
-          console.error("Error in authorize method:", err);
+          console.error("Authorization error:", err);
           return null;
         }
       },
@@ -71,20 +54,18 @@ const authOptions: AuthOptions = {
   callbacks: {
     async session({ session, token }) {
       if (token.sub) {
-        (session.user as CustomUser).id = token.sub;
+        session.user.id = token.sub;
       }
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
     signOut: "/logout",
     error: "/login",
   },
-  session: {
-    strategy: "jwt",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
+  session: { strategy: "jwt" },
 };
 
 const handler = NextAuth(authOptions);
