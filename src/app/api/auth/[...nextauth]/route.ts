@@ -1,6 +1,18 @@
+import NextAuth, { AuthOptions } from "next-auth";
+import { JWT } from "next-auth/jwt";
+import { Session } from "next-auth";
 import { createClient } from "@supabase/supabase-js";
-import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+
+interface Credentials {
+  username: string;
+  password: string;
+}
+
+interface CustomUser {
+  id: string;
+  name: string | null;
+}
 
 // Supabaseクライアントのセットアップ
 const supabase = createClient(
@@ -8,7 +20,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 );
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -17,8 +29,12 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const username = credentials?.username;
-        const password = credentials?.password;
+        if (!credentials) {
+          console.error("Missing credentials");
+          return null;
+        }
+
+        const { username, password } = credentials as Credentials;
 
         if (!username || !password) {
             console.error("Missing credentials");
@@ -53,6 +69,14 @@ export const authOptions = {
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token }: { session: Session; token: JWT }) {
+        if (token.sub) {
+          (session.user as CustomUser).id = token.sub; 
+        }
+        return session;
+      }
+  },
   pages: {
     signIn: "/login",
     signOut: "/logout",
@@ -60,22 +84,6 @@ export const authOptions = {
   },
   session: {
     strategy: "jwt" as const,
-  },
-  callbacks: {
-    async jwt({ token, user }: { token: any; user?: any }) {
-      if (user) {
-        token.id = user.id;
-        token.name = user.name;
-      }
-      return token;
-    },
-    async session({ session, token }: { session: any; token: any }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.name = token.name;
-      }
-      return session;
-    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

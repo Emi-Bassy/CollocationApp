@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { relationMap } from "@/app/lib/types";
 import { handleSpeak } from "@/utils/speech";
 import { supabase } from "@/app/lib/supabaseClient";
+import { getSession } from "next-auth/react";
 
 export default function DetailPage() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function DetailPage() {
   const [collocationTranslation, setCollocationTranslation] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [dataExists, setDataExists] = useState(true); 
+  // const [dataExists, setDataExists] = useState(true); 
   const [error, setError] = useState<string | null>(null);
 
   const sanitizedExample = (html: string) => DOMPurify.sanitize(html);
@@ -42,7 +43,6 @@ export default function DetailPage() {
   
       const collocationData = await collocationResponse.json();
       setCollocationTranslation(collocationData.text);
-      console.log("Collocation translation response:", collocationData);
   
       // 例文の和訳を取得
       const exampleResponse = await Promise.all(
@@ -61,24 +61,24 @@ export default function DetailPage() {
           }
   
           const data = await response.json();
-          console.log("Example translation response:", data);
           return DOMPurify.sanitize(data.text); // サニタイザーを適用
         })
       );
   
       setExampleTranslation(exampleResponse);
-    } catch (error: any) {
-      setError(`Failed to fetch translations: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      setError(`Failed to fetch translations: ${errorMessage}`);
       console.error("Error fetching translations:", error);
     }
-  };
+  }
+    
+    // UIでエラーを表示
+    {error && (
+      <p className="text-red-600 text-center mt-4">{error}</p>
+    )}
   
-  // UIでエラーを表示
-  {error && (
-    <p className="text-red-600 text-center mt-4">{error}</p>
-  )}
-  
-
   useEffect(() => {
     fetchTranslations();
   },[]);
@@ -86,13 +86,24 @@ export default function DetailPage() {
   const addToProgress = async () => {
     setLoading(true);
     setMessage(null);
+    const session = await getSession();
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      setMessage("User not logged in.");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.from("progress").insert([
       {
         collocation: searchCollocation,
         relation: searchRelation,
         examples: searchedEXample,
+        user_id: userId,
       },
     ]);
+    
     if (error) {
       setMessage(`Error: ${error.message}`);
     } else {
@@ -116,7 +127,7 @@ export default function DetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-black p-6">
+    <div className="min-h-screen text-black p-6">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
         <button
             onClick={() => router.back()}

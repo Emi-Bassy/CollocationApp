@@ -28,8 +28,10 @@ export default function SignUpPage() {
 
       alert("Sign up successful! Please log in.");
       router.push("/login");
-    } catch (err: any) {
-      setError(err.message || "An error occurred during sign up.");
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An error occurred during sign up.";
+      setError(errorMessage);
     }
   };
 
