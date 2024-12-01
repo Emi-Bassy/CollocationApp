@@ -24,14 +24,13 @@ export async function POST(req: Request) {
       .single();
 
     if (fetchError && fetchError.code !== "PGRST116") {
-      // "PGRST116" はデータが見つからない場合のエラーコード（Supabase 固有）
       return NextResponse.json({ error: fetchError.message }, { status: 500 });
     }
 
     if (existingUser) {
       return NextResponse.json(
         { error: "Username already exists. Please choose a different username." },
-        { status: 409 } // 409 Conflict
+        { status: 409 }
       );
     }
 
@@ -49,6 +48,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "User signed up successfully" }, { status: 200 });
   } catch (error) {
+    console.error("Sign-up error:", error); // エラーをログに記録
     return NextResponse.json({ error: "An error occurred during sign up" }, { status: 500 });
   }
 }
