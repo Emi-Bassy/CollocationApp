@@ -14,8 +14,8 @@ export const handleSpeak = (text: string) => {
 
     // デフォルトの音声を使用
     const voices = synth.getVoices();
-    utterance.voice = voices[0] || null;
+    const englishVoice = voices.find(voice => voice.lang.startsWith('en'));
+    utterance.voice =  englishVoice || null; 
 
     synth.speak(utterance);
   };
-  
