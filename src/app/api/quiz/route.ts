@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
           # 指示
           - 必ず指定されたコロケーション${collocation}を正確に使用してください。
-          - 問題文では${collocation}を和訳して用いてください
+        - 問題文では${collocation}を和訳して用いてください。
           - コロケーションは、文中で自然な形で含める必要があります。
           - コロケーションが置き換えられたり、同義表現に変換されないようにしてください。
           - 問題文は日本語で作成してください。問題文に英語を含めないでください。
@@ -39,6 +39,9 @@ export async function POST(request: Request) {
           - コロケーション: "to eat apples"
             作成される問題文: 子どもたちはおいしいりんごを食べるのが好きです。
             英訳: Children like to eat delicious apples. (8語)
+
+          # 注意
+          - 作成したクイズ文が指定されたコロケーション${collocation}を正確に使用しているか確認してください。
         `,
       },
       {
