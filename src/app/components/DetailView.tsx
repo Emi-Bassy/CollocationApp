@@ -87,20 +87,32 @@ export function DetailView({ result, onClose }: DetailViewProps) {
 
   // クイズの作成
   const handleQuiz = async () => {
-    const response = await fetch("api/quiz", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        collocation: result.collocation,
-      }),
-    });
-
-    const quizData = await response.json();
-
-    // /quizページに遷移してクイズデータを渡す
-    router.push(`/quiz?question=${encodeURIComponent(quizData.question)}&answer=${encodeURIComponent(quizData.answer)}`);
+    try {
+      const response = await fetch("api/quiz", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          collocation: result.collocation,
+        }),
+      });
+    
+      const quizData = await response.json();
+      console.log("Generated Quiz:", quizData);
+  
+      // /quizページに遷移してクイズデータを渡す
+      if (!quizData.question.includes(result.collocation)) {
+        console.error("Generated question does not contain the specified collocation.");
+        setMessage("クイズ文に指定のコロケーションが含まれていません");
+        return;
+      }
+      
+      router.push(`/quiz?question=${encodeURIComponent(quizData.question)}&answer=${encodeURIComponent(quizData.answer)}`);
+    } catch (error) {
+        console.error("Error fetching quiz:", error);
+        setMessage("クイズの取得に失敗しました");
+    }
   };
 
   return (
