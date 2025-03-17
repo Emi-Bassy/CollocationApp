@@ -30,11 +30,21 @@ const SpeechInput = ({ onResult }: SpeechInputProps) => {
 
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
+    recognition.interimResults = false;
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      console.log("Recognized text:", transcript);
-      onResult(transcript); // 認識結果を親コンポーネントに渡す
+      console.log("Speech Result:", event.results); 
+      if (event.results.length > 0) {
+        const transcript = event.results[0][0].transcript;
+        console.log("Recognized text:", transcript);
+        onResult(transcript); // 認識結果を親コンポーネントに渡す
+      } else {
+      console.warn("No speech detected.");
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech Recognition Error:", event.error);
     };
 
     recognition.onend = () => {
@@ -42,7 +52,11 @@ const SpeechInput = ({ onResult }: SpeechInputProps) => {
       setIsActive(false); // 終了時にボタンの状態をリセット
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (error) {
+      console.error("Error starting recognition:", error);
+    }
   };
 
   return (
